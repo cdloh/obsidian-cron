@@ -23,7 +23,7 @@ jobs:
           node-version: ${{ matrix.node }}
       - run: npm ci
       - run: npm run lint
-      - run: npm build
+      - run: npm run build
 
   deploy:
     if: ${{ github.event_name == 'workflow_dispatch' }}
