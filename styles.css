@@ -6,3 +6,12 @@ available in the app when your plugin is enabled.
 If your plugin does not need CSS, delete this file.
 
 */
+
+.cron-plugin-text-input {
+	width: 10vw;
+	min-width: 180px;
+}
+
+.cron-plugin-job {
+	flex-wrap: wrap;
+}

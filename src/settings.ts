@@ -71,6 +71,7 @@ export default class CronSettingTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 						this.plugin.loadCrons();
 					})
+					.inputEl.addClass('cron-plugin-text-input')
 				)
 				.addSearch((cb) => {
 						new CommandSuggest(cb.inputEl);
@@ -83,6 +84,7 @@ export default class CronSettingTab extends PluginSettingTab {
 								await this.plugin.saveSettings();
 								this.plugin.loadCrons();
 							})
+							.inputEl.addClass('cron-plugin-text-input')
 				})
 				.addText(text => text
 					.setPlaceholder("CronJob frequency")
@@ -92,6 +94,7 @@ export default class CronSettingTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 						this.plugin.loadCrons();
 					})
+					.inputEl.addClass('cron-plugin-text-input')
 				)
 				.addExtraButton((button) => {
 					button.setIcon(cronjob.settings.enableMobile ? "lucide-phone" : "lucide-phone-off")
@@ -137,6 +140,8 @@ export default class CronSettingTab extends PluginSettingTab {
 							this.display();
 						});
 				});
+
+				jobSetting.controlEl.addClass("cron-plugin-job")
 		});
 
 		new Setting(this.containerEl).addButton((cb) => {
