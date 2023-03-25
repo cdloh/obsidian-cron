@@ -14,16 +14,16 @@ Each job requires
 1. a name
 2. an Obsidian command to run
 3. a cron schedule syntax expression
-  * This will be the frequency your job runs. If you need help writing a cron schedule [crontab.guru](https://crontab.guru/) can help
+   * This will be the frequency your job runs. If you need help writing a cron schedule [crontab.guru](https://crontab.guru/) can help
 
 Each job also has three toggable options
 
 1. Enable job to run on mobile
-  * By default all jobs do not run on mobile
+   * By default all jobs do not run on mobile
 2. Toggle job lock
-  * If your job gets stuck with a bad log you can toggle the status here. Check [locking](#locking) for more details
+   * If your job gets stuck with a bad log you can toggle the status here. Check [locking](#locking) for more details
 3. Toggle sync check
-  * Toggles the sync check ability on a per job basis. Check [sync](#sync) for more details
+   * Toggles the sync check ability on a per job basis. Check [sync](#sync) for more details
 
 # Functionality
 
