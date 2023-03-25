@@ -35,7 +35,7 @@ export default class CronLockManager {
 	private async updateLockJob(status: boolean): Promise<void> {
 		this.plugin.settings.locks[this.job].locked = status
 		this.plugin.settings.locks[this.job].lockedDeviceName = this.syncChecker.deviceName();
-		this.plugin.saveSettings()
+		await this.plugin.saveSettings()
 		return this.syncChecker.waitForSync(this.settings)
 	}
 
