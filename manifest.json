@@ -1,7 +1,7 @@
 {
 	"id": "cron",
 	"name": "Cron",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
 	"description": "Simple CRON / schedular plugin to regularly run user scripts or Obsidian commands.",
 	"author": "Callum Loh",
