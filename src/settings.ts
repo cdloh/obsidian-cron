@@ -1,4 +1,5 @@
 import { App, PluginSettingTab, Setting } from 'obsidian';
+import { v4 as uuidv4 } from 'uuid';
 import { CommandSuggest } from './commandSuggest';
 import type Cron from './main';
 
@@ -112,7 +113,7 @@ export default class CronSettingTab extends PluginSettingTab {
 					button.setIcon(jobLocked ? "lucide-lock" : "lucide-unlock")
 						.setTooltip("Toggle job lock (clear lock if accidentally left locked)")
 						.onClick(() => {
-							this.plugin.settings.locks[cronjob.name].locked = !jobLocked;
+							this.plugin.settings.locks[cronjob.id].locked = !jobLocked;
 							this.plugin.saveSettings();
 							// refresh
 							this.display()
@@ -134,7 +135,7 @@ export default class CronSettingTab extends PluginSettingTab {
 						.setTooltip("Delete Job")
 						.onClick(() => {
 							this.plugin.settings.crons.splice(index, 1)
-							delete this.plugin.settings.locks[cronjob.name]
+							delete this.plugin.settings.locks[cronjob.id]
 							this.plugin.saveSettings();
 							// Force refresh
 							this.display();
@@ -149,6 +150,7 @@ export default class CronSettingTab extends PluginSettingTab {
 				.setCta()
 				.onClick(() => {
 					this.plugin.settings.crons.push({
+						id: uuidv4(),
 						name: "",
 						job: "",
 						frequency: "",

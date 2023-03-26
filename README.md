@@ -27,6 +27,24 @@ Each job also has three toggable options
 
 # Functionality
 
+## API / UserScripts
+
+An API is exposed to add user functions via Javascript. The name is treated as a UUID for the job ensure that this is consistent across reloads of Obsidian to ensure that locks / last run data is usable.
+
+An instance of the Obsidian app is passed to all user function as the first and only paramater.
+
+To clear locks for jobs added via the API you can add a job with the corrosponding name and then pass the name to the `clearJobLock(name: string)`
+
+Example of a user function
+
+```javascript
+
+const cron = app.plugins.plugins.cron;
+
+cron.addCronJob('addCronJob', "* * * * 3", {"enableMobile": true}, function(app){console.log('Job has ran!')});
+
+```
+
 ## Sync
 
 Obsidian cron has the ability to hook into the native Obsidian Sync plugin. When enabled all locks, cron runs & commands will wait for Obsidian Sync to be fully completed before running any cron jobs.

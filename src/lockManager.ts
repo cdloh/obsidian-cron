@@ -51,6 +51,10 @@ export default class CronLockManager {
 		this.plugin.settings.locks[this.job].locked = false
 	}
 
+	lastRun(): string | undefined {
+		return this.plugin.settings.locks[this.job].lastRun;
+	}
+
 	resetLastRun(): void {
 		this.plugin.settings.locks[this.job].lastRun = undefined
 	}

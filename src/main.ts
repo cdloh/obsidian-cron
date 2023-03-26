@@ -13,6 +13,7 @@ export interface CronSettings {
 }
 
 export interface CRONJob {
+	id: string
 	name: string
 	job: string
 	frequency: string
@@ -66,10 +67,10 @@ export default class Cron extends Plugin {
 		}
 	}
 
-	public addCronJob(name: string, job: CronJobFunc, frequency: string, settings: CronJobSettings) {
+	public addCronJob(name: string, frequency: string, settings: CronJobSettings, job: CronJobFunc) {
 		if(this.jobs[name]) throw new Error("CRON Job already exists")
 
-		this.jobs[name] = new Job(name, job, frequency, settings, this.app, this, this.syncChecker)
+		this.jobs[name] = new Job(name, name, job, frequency, settings, this.app, this, this.syncChecker)
 	}
 
 	public async runJob(name: string) {
@@ -91,11 +92,11 @@ export default class Cron extends Plugin {
 
 	public loadCrons() {
 		this.settings.crons.forEach(cronjob => {
-			if(cronjob.frequency === "" || cronjob.job === "" || cronjob.name === "") {
+			if(cronjob.frequency === "" || cronjob.job === "") {
 				return;
 			}
 
-			this.jobs[cronjob.name] = new Job(cronjob.name, cronjob.job, cronjob.frequency, cronjob.settings, this.app, this, this.syncChecker)
+			this.jobs[cronjob.id] = new Job(cronjob.id, cronjob.name, cronjob.job, cronjob.frequency, cronjob.settings, this.app, this, this.syncChecker)
 		});
 	}
 

@@ -22,15 +22,17 @@ export default class Job {
 	settings: CronJobSettings
 	job: CronJobFunc | string
 	name: string
+	id: string
 	noRunReason: string
 
-	public constructor(name: string, job: CronJobFunc | string, frequency: string, settings: CronJobSettings, app: App, plugin: Cron, syncChecker: SyncChecker) {
+	public constructor(id: string, name: string, job: CronJobFunc | string, frequency: string, settings: CronJobSettings, app: App, plugin: Cron, syncChecker: SyncChecker) {
 		this.syncChecker = syncChecker;
 		this.plugin = plugin;
 		this.app = app;
 
-		this.lockManager = new CronLockManager(name, settings, plugin, syncChecker)
+		this.lockManager = new CronLockManager(id, settings, plugin, syncChecker)
 		this.name = name;
+		this.id = id;
 		this.job = job;
 		this.frequency = frequency;
 		this.settings = settings;
@@ -74,9 +76,9 @@ export default class Job {
 
 	private jobIntervalPassed(): boolean {
 		// job never ran
-		if(!this.plugin.settings.locks[this.name].lastRun) return true
+		const lastRun = this.lockManager.lastRun()
+		if(!lastRun) return true
 
-		const lastRun = window.moment(this.plugin.settings.locks[this.name].lastRun)
 		const prevRun = window.moment(parseExpression(this.frequency).prev().toDate())
 		return prevRun.isAfter(lastRun)
 	}
