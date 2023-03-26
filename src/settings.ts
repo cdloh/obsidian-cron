@@ -31,6 +31,17 @@ export default class CronSettingTab extends PluginSettingTab {
 			);
 
 		new Setting(containerEl)
+			.setName('Run cron on startup')
+			.setDesc('Do a cron run on startup instead of waiting for the first interval to pass')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.runOnStartup)
+				.onChange(async (value) => {
+					this.plugin.settings.runOnStartup = value;
+					await this.plugin.saveSettings();
+				})
+			);
+
+		new Setting(containerEl)
 			.setName('Enable Obsidian Sync Checker')
 			.setDesc('Whether or not to wait for Obsidian sync before running any CRONs globally.')
 			.addToggle(toggle => toggle

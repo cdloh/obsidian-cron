@@ -7,6 +7,7 @@ import SyncChecker from './syncChecker';
 
 export interface CronSettings {
 	cronInterval: number;
+	runOnStartup: boolean
 	watchObsidianSync: boolean
 	crons: Array<CRONJob>,
 	locks: { [key: string]: CronLock }
@@ -22,6 +23,7 @@ export interface CRONJob {
 
 const DEFAULT_SETTINGS: CronSettings = {
 	cronInterval: 15,
+	runOnStartup: true,
 	watchObsidianSync: true,
 	crons: [],
 	locks: {}
@@ -48,6 +50,12 @@ export default class Cron extends Plugin {
 		// load our cronjobs
 		this.loadCrons()
 		this.loadInterval()
+
+		this.app.workspace.onLayoutReady(() => {
+			if(this.settings.runOnStartup) {
+				this.runCron()
+			}
+		})
 	}
 
 	public async runCron() {
