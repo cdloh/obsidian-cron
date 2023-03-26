@@ -4,6 +4,7 @@ import { CronLock } from './lockManager';
 import CronLockManager from './lockManager';
 import CronSettingTab from './settings';
 import SyncChecker from './syncChecker';
+import CronAPI from './api';
 
 export interface CronSettings {
 	cronInterval: number;
@@ -36,6 +37,7 @@ export default class Cron extends Plugin {
 	syncChecker: SyncChecker
 	lockManager: CronLockManager
 	jobs: { [key: string]: Job }
+	api: CronAPI
 
 	async onload() {
 		console.log("Loading Obsidian CRON!");
@@ -50,7 +52,7 @@ export default class Cron extends Plugin {
 		// load our cronjobs
 		this.loadCrons()
 		this.loadInterval()
-
+		this.api = CronAPI.get(this)
 		this.app.workspace.onLayoutReady(() => {
 			if(this.settings.runOnStartup) {
 				this.runCron()
@@ -76,21 +78,29 @@ export default class Cron extends Plugin {
 	}
 
 	public addCronJob(name: string, frequency: string, settings: CronJobSettings, job: CronJobFunc) {
-		if(this.jobs[name]) throw new Error("CRON Job already exists")
+		const existingJob = this.getJob(name)
+		if(existingJob) throw new Error("CRON Job already exists")
 
 		this.jobs[name] = new Job(name, name, job, frequency, settings, this.app, this, this.syncChecker)
 	}
 
 	public async runJob(name: string) {
-		if(!this.jobs[name]) throw new Error("CRON Job doesn't exist")
-
-		await this.jobs[name].runJob()
+		const job = this.getJob(name)
+		if(!job) throw new Error("CRON Job doesn't exist")
+		await job.runJob()
 	}
 
 	public clearJobLock(name: string) {
-		if(!this.jobs[name]) throw new Error("CRON Job doesn't exist")
+		const job = this.getJob(name)
+		if(!job) throw new Error("CRON Job doesn't exist")
+		job.clearJobLock()
+	}
 
-		this.jobs[name].clearJobLock()
+	public getJob(name: string): Job | null {
+		for (const [, job] of Object.entries(this.jobs)) {
+			if(job.name == name) return job
+		}
+		return null
 	}
 
 	public onunload() {

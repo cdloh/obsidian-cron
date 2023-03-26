@@ -33,13 +33,13 @@ An API is exposed to add user functions via Javascript. The name is treated as a
 
 An instance of the Obsidian app is passed to all user function as the first and only paramater.
 
-To clear locks for jobs added via the API you can add a job with the corrosponding name and then pass the name to the `clearJobLock(name: string)`
+To clear locks for jobs added via the API you can add a job with the corrosponding name and then pass the name to the `clearJobLock(name: string)` function also in the API.
 
 Example of a user function
 
 ```javascript
 
-const cron = app.plugins.plugins.cron;
+const cron = app.plugins.plugins.cron.api;
 
 cron.addCronJob('addCronJob', "* * * * 3", {"enableMobile": true}, function(app){console.log('Job has ran!')});
 
