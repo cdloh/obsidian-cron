@@ -9,6 +9,7 @@ import CronAPI from './api';
 export interface CronSettings {
 	cronInterval: number;
 	runOnStartup: boolean
+	enableMobile: boolean
 	watchObsidianSync: boolean
 	crons: Array<CRONJob>,
 	locks: { [key: string]: CronLock }
@@ -25,6 +26,7 @@ export interface CRONJob {
 const DEFAULT_SETTINGS: CronSettings = {
 	cronInterval: 15,
 	runOnStartup: true,
+	enableMobile: true,
 	watchObsidianSync: true,
 	crons: [],
 	locks: {}
@@ -55,6 +57,7 @@ export default class Cron extends Plugin {
 		this.api = CronAPI.get(this)
 		this.app.workspace.onLayoutReady(() => {
 			if(this.settings.runOnStartup) {
+				if(this.app.isMobile && !this.settings.enableMobile) { return }
 				this.runCron()
 			}
 		})
@@ -120,6 +123,7 @@ export default class Cron extends Plugin {
 
 	public loadInterval() {
 		clearInterval(this.interval)
+		if(this.app.isMobile && !this.settings.enableMobile) { return }
 		this.interval = window.setInterval(async () => { await this.runCron()	}, this.settings.cronInterval * 60 * 1000)
 		this.registerInterval(this.interval)
 	}

@@ -52,6 +52,17 @@ export default class CronSettingTab extends PluginSettingTab {
 				})
 			);
 
+		new Setting(containerEl)
+			.setName('Enable Obsidian on Mobile')
+			.setDesc('Whether or not to load jobs at all on Mobile devices. If disabled even jobs with mobile enabled will not run.')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.enableMobile)
+				.onChange(async (value) => {
+					this.plugin.settings.enableMobile = value;
+					await this.plugin.saveSettings();
+				})
+			);
+
 		const desc = document.createDocumentFragment();
 		desc.append(
 			"List of CRON Jobs to run. Jobs will not be ran until all 3 fields have been filled",
