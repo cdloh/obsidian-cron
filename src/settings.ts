@@ -130,7 +130,7 @@ export default class CronSettingTab extends PluginSettingTab {
 						})
 				})
 
-				const jobLocked = this.plugin.settings.locks[cronjob.name] && this.plugin.settings.locks[cronjob.name].locked
+				const jobLocked = this.plugin.settings.locks[cronjob.id] && this.plugin.settings.locks[cronjob.id].locked
 				jobSetting.addExtraButton((button) => {
 					button.setIcon(jobLocked ? "lucide-lock" : "lucide-unlock")
 						.setTooltip("Toggle job lock (clear lock if accidentally left locked)")
