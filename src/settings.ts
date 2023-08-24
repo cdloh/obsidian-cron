@@ -12,10 +12,10 @@ export default class CronSettingTab extends PluginSettingTab {
 	}
 
 	display(): void {
-		const {containerEl} = this;
+		const { containerEl } = this;
 
 		containerEl.empty();
-		containerEl.createEl('h2', {text: 'Settings for Cron.'});
+		containerEl.createEl('h2', { text: 'Settings for Cron.' });
 
 		new Setting(containerEl)
 			.setName('Cron Interval')
@@ -23,7 +23,7 @@ export default class CronSettingTab extends PluginSettingTab {
 			.addText(text => text
 				.setValue(this.plugin.settings.cronInterval.toString())
 				.onChange(async (value) => {
-					if(value == "") {return}
+					if (value == "") { return }
 					this.plugin.settings.cronInterval = parseInt(value);
 					await this.plugin.saveSettings();
 					this.plugin.loadInterval();
@@ -69,8 +69,8 @@ export default class CronSettingTab extends PluginSettingTab {
 			desc.createEl("br"),
 			"Cron Frequency is a cron schedule expression. Use ",
 			desc.createEl("a", {
-					href: "https://crontab.guru/",
-					text: "crontab guru",
+				href: "https://crontab.guru/",
+				text: "crontab guru",
 			}),
 			" for help with creating cron schedule expressions."
 		);
@@ -82,7 +82,7 @@ export default class CronSettingTab extends PluginSettingTab {
 		this.addCommandSearch()
 	}
 
-	addCommandSearch (): void {
+	addCommandSearch(): void {
 
 		this.plugin.settings.crons.forEach((cronjob, index) => {
 			const jobSetting = new Setting(this.containerEl)
@@ -97,17 +97,17 @@ export default class CronSettingTab extends PluginSettingTab {
 					.inputEl.addClass('cron-plugin-text-input')
 				)
 				.addSearch((cb) => {
-						new CommandSuggest(cb.inputEl);
-						cb.setPlaceholder("Command")
-							.setValue(cronjob.job)
-							.onChange(async (command) => {
-								if(!command) { return }
+					new CommandSuggest(cb.inputEl);
+					cb.setPlaceholder("Command")
+						.setValue(cronjob.job)
+						.onChange(async (command) => {
+							if (!command) { return }
 
-								this.plugin.settings.crons[index].job = command;
-								await this.plugin.saveSettings();
-								this.plugin.loadCrons();
-							})
-							.inputEl.addClass('cron-plugin-text-input')
+							this.plugin.settings.crons[index].job = command;
+							await this.plugin.saveSettings();
+							this.plugin.loadCrons();
+						})
+						.inputEl.addClass('cron-plugin-text-input')
 				})
 				.addText(text => text
 					.setPlaceholder("CronJob frequency")
@@ -130,33 +130,34 @@ export default class CronSettingTab extends PluginSettingTab {
 						})
 				})
 
-				const jobLocked = this.plugin.settings.locks[cronjob.id] && this.plugin.settings.locks[cronjob.id].locked
-				jobSetting.addExtraButton((button) => {
-					button.setIcon(jobLocked ? "lucide-lock" : "lucide-unlock")
-						.setTooltip("Toggle job lock (clear lock if accidentally left locked)")
-						.onClick(() => {
-							this.plugin.settings.locks[cronjob.id].locked = !jobLocked;
-							this.plugin.saveSettings();
-							// refresh
-							this.display()
-						})
-				})
+			const jobLocked = this.plugin.settings.locks[cronjob.id] && this.plugin.settings.locks[cronjob.id].locked
+			jobSetting.addExtraButton((button) => {
+				button.setIcon(jobLocked ? "lucide-lock" : "lucide-unlock")
+					.setTooltip("Toggle job lock (clear lock if accidentally left locked)")
+					.onClick(() => {
+						this.plugin.settings.locks[cronjob.id].locked = !jobLocked;
+						this.plugin.saveSettings();
+						// refresh
+						this.display()
+					})
+			})
 
-				jobSetting.addExtraButton((button) => {
-					button.setIcon(cronjob.settings.disableSyncCheck ? "paused" : "lucide-check-circle-2")
-						.setTooltip("Toggle Sync check for this job. Presently: " + (cronjob.settings.disableSyncCheck ? "disabled" : "enabled"))
-						.onClick(() => {
-							this.plugin.settings.crons[index].settings.disableSyncCheck = !cronjob.settings.disableSyncCheck;
-							this.plugin.saveSettings();
-							// Force refresh
-							this.display();
-						});
-				})
+			jobSetting.addExtraButton((button) => {
+				button.setIcon(cronjob.settings.disableSyncCheck ? "paused" : "lucide-check-circle-2")
+					.setTooltip("Toggle Sync check for this job. Presently: " + (cronjob.settings.disableSyncCheck ? "disabled" : "enabled"))
+					.onClick(() => {
+						this.plugin.settings.crons[index].settings.disableSyncCheck = !cronjob.settings.disableSyncCheck;
+						this.plugin.saveSettings();
+						// Force refresh
+						this.display();
+					});
+			})
 				.addExtraButton((button) => {
 					button.setIcon("cross")
 						.setTooltip("Delete Job")
 						.onClick(() => {
 							this.plugin.settings.crons.splice(index, 1)
+							delete this.plugin.jobs[cronjob.id]
 							delete this.plugin.settings.locks[cronjob.id]
 							this.plugin.saveSettings();
 							// Force refresh
@@ -164,7 +165,7 @@ export default class CronSettingTab extends PluginSettingTab {
 						});
 				});
 
-				jobSetting.controlEl.addClass("cron-plugin-job")
+			jobSetting.controlEl.addClass("cron-plugin-job")
 		});
 
 		new Setting(this.containerEl).addButton((cb) => {
