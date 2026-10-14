@@ -1,7 +1,7 @@
 {
 	"id": "cron",
 	"name": "Cron",
-	"version": "2.0.0",
+	"version": "2.0.1",
 	"minAppVersion": "1.13.0",
 	"description": "Simple CRON / schedular plugin to regularly run user scripts or commands.",
 	"author": "Callum Loh",
