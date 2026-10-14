@@ -1,10 +1,10 @@
-import { App } from 'obsidian';
+import { App, EventRef } from 'obsidian';
 import { CronJobSettings } from './job';
 import Cron from './main';
+import { SyncPluginInstance } from '@obsidian-typings/obsidian-public-latest';
 
 const syncEmitterName = 'status-change';
 const syncCompletedStatus = 'synced';
-const syncWaiterCtxID = "syncWaiter";
 
 type promiseEntry = {
 	resolve: () => void
@@ -12,17 +12,15 @@ type promiseEntry = {
 }
 
 export default class SyncChecker {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	syncInstance: any
+	syncInstance: SyncPluginInstance
+	eventRef: EventRef
 	plugin: Cron
-	syncWaiters: Array<promiseEntry>
+	syncWaiters: Array<promiseEntry> = []
 
 	public constructor(app: App, plugin: Cron) {
 		this.syncInstance = app.internalPlugins.plugins['sync'].instance;
 		this.plugin = plugin;
-		this.syncWaiters = [];
-
-		this.syncInstance.on(syncEmitterName, this.handleSyncStatusChange.bind(this), syncWaiterCtxID)
+		this.eventRef = this.syncInstance.on(syncEmitterName, this.handleSyncStatusChange.bind(this))
 	}
 
 	public deviceName(): string {
@@ -47,10 +45,7 @@ export default class SyncChecker {
 		});
 
 		// Unload the listener
-		this.syncInstance._[syncEmitterName] = this.syncInstance._[syncEmitterName].filter((listener: { ctx: string; }) => {
-			if(listener.ctx === syncWaiterCtxID) return false
-			return true
-		})
+		this.syncInstance.offref(this.eventRef);
 	}
 
 	public waitForSync(settings: CronJobSettings): Promise<void> {

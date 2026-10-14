@@ -1,17 +1,55 @@
-/*
-
-This CSS file will be included with your plugin, and
-available in the app when your plugin is enabled.
-
-If your plugin does not need CSS, delete this file.
-
-*/
-
-.cron-plugin-text-input {
-	width: 10vw;
-	min-width: 180px;
-}
+/* Cron job rows: name, command and frequency side by side, buttons on the line below */
 
 .cron-plugin-job {
 	flex-wrap: wrap;
+	align-items: stretch;
+	width: 100%;
+}
+
+.cron-plugin-job .setting-item-info {
+	display: none;
+}
+
+.cron-plugin-job .setting-item-control {
+	flex: 1 1 100%;
+	flex-direction: column;
+	align-items: stretch;
+	gap: 8px;
+	min-width: 0;
+}
+
+.cron-plugin-job-fields {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) minmax(0, 1fr);
+	gap: 8px;
+}
+
+/* Obsidian's phone rule (.is-phone ... .setting-item-control { width: auto }) outranks the
+   selector above. Match its ancestors so this wins, and keep the row full width on phones. */
+.is-phone .modal .setting-group.mod-list .setting-items .cron-plugin-job .setting-item-control {
+	width: 100%;
+	max-width: 100%;
+}
+
+.cron-plugin-job .cron-plugin-job-fields .cron-plugin-text-input,
+.cron-plugin-job .cron-plugin-job-fields .search-input-container input {
+	width: 100%;
+	min-width: 0;
+}
+
+.cron-plugin-job-fields .search-input-container {
+	width: 100%;
+}
+
+.cron-plugin-job-actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 4px;
+}
+
+/* Stack the fields on narrow screens (e.g. mobile) */
+@media (max-width: 600px) {
+	.cron-plugin-job-fields {
+		grid-template-columns: minmax(0, 1fr);
+	}
 }
