@@ -1,4 +1,4 @@
-import { Plugin } from 'obsidian';
+import { Plugin, Platform } from 'obsidian';
 import Job, { CronJobFunc, CronJobSettings } from './job';
 import { CronLock } from './lockManager';
 import CronLockManager from './lockManager';
@@ -23,7 +23,7 @@ export interface CRONJob {
 	settings: CronJobSettings
 }
 
-const DEFAULT_SETTINGS: CronSettings = {
+export const DEFAULT_SETTINGS: CronSettings = {
 	cronInterval: 15,
 	runOnStartup: true,
 	enableMobile: true,
@@ -34,15 +34,15 @@ const DEFAULT_SETTINGS: CronSettings = {
 
 export default class Cron extends Plugin {
 	static instance: Cron
-	interval: number;
-	settings: CronSettings;
-	syncChecker: SyncChecker
-	lockManager: CronLockManager
-	jobs: { [key: string]: Job }
-	api: CronAPI
+	interval!: number;
+	settings!: CronSettings;
+	syncChecker!: SyncChecker
+	lockManager!: CronLockManager
+	jobs!: { [key: string]: Job }
+	api!: CronAPI
 
 	async onload() {
-		console.log("Loading Obsidian CRON!");
+		console.debug("Loading Obsidian CRON!");
 		Cron.instance = this;
 		await this.loadSettings();
 
@@ -55,10 +55,10 @@ export default class Cron extends Plugin {
 		this.loadCrons()
 		this.loadInterval()
 		this.api = CronAPI.get(this)
-		this.app.workspace.onLayoutReady(() => {
+		this.app.workspace.onLayoutReady(async () => {
 			if(this.settings.runOnStartup) {
-				if(this.app.isMobile && !this.settings.enableMobile) { return }
-				this.runCron()
+				if(Platform.isMobile && !this.settings.enableMobile) { return }
+				await this.runCron()
 			}
 		})
 	}
@@ -108,7 +108,7 @@ export default class Cron extends Plugin {
 
 	public onunload() {
 		if(this.settings.watchObsidianSync)	this.syncChecker.handleUnload()
-		console.log("Cron unloaded")
+		console.debug("Cron unloaded")
 	}
 
 	public loadCrons() {
@@ -121,10 +121,10 @@ export default class Cron extends Plugin {
 		});
 	}
 
-	public loadInterval() {
-		clearInterval(this.interval)
-		if(this.app.isMobile && !this.settings.enableMobile) { return }
-		this.interval = window.setInterval(async () => { await this.runCron()	}, this.settings.cronInterval * 60 * 1000)
+	public loadInterval(value = this.settings.cronInterval) {
+		window.clearInterval(this.interval)
+		if(Platform.isMobile && !this.settings.enableMobile) { return }
+		this.interval = window.setInterval(() => { void this.runCron()	}, value * 60 * 1000)
 		this.registerInterval(this.interval)
 	}
 

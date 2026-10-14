@@ -1,32 +1,16 @@
-// Credits go to Liam's Periodic Notes Plugin: https://github.com/liamcain/obsidian-periodic-notes
-
-import { Command } from "obsidian";
-import { TextInputSuggest } from "./suggest";
-
-export class CommandSuggest extends TextInputSuggest<Command> {
-    getSuggestions(inputStr: string): Command[] {
-        const abstractCommands = app.commands.commands;
-        const commands: Command[] = [];
-        const lowerCaseInputStr = inputStr.toLowerCase();
-
-			for (const [, command] of Object.entries(abstractCommands)) {
-				if (
-					command.name.toLowerCase().contains(lowerCaseInputStr)
-				) {
-					commands.push(command)
-				}
-			}
-
-        return commands;
+import { AbstractInputSuggest, Command } from "obsidian";
+export class CommandSuggest extends AbstractInputSuggest<Command> {
+    protected getSuggestions(query: string): Command[] {
+        const lowerQuery = query.toLowerCase();
+        return Object.values(this.app.commands.commands)
+            .filter((command) => command.name.toLowerCase().includes(lowerQuery));
     }
-
     renderSuggestion(command: Command, el: HTMLElement): void {
         el.setText(command.name);
     }
-
-    selectSuggestion(command: Command): void {
-        this.inputEl.value = command.id;
-        this.inputEl.trigger("input");
+    selectSuggestion(command: Command, evt: MouseEvent | KeyboardEvent): void {
+        this.setValue(command.name);
+        super.selectSuggestion(command, evt);
         this.close();
     }
 }

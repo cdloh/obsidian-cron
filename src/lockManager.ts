@@ -24,17 +24,17 @@ export default class CronLockManager {
 		if(!this.plugin.settings.locks[this.job]) {
 			this.plugin.settings.locks[this.job] = {}
 		}
-		this.plugin.saveSettings()
+		void this.plugin.saveSettings()
 	}
 
 	updateLastrun(): Promise<void> {
-		this.plugin.settings.locks[this.job].lastRun = window.moment().format()
+		this.plugin.settings.locks[this.job]!.lastRun = window.moment().format()
 		return this.plugin.saveSettings()
 	}
 
 	private async updateLockJob(status: boolean): Promise<void> {
-		this.plugin.settings.locks[this.job].locked = status
-		this.plugin.settings.locks[this.job].lockedDeviceName = this.syncChecker.deviceName();
+		this.plugin.settings.locks[this.job]!.locked = status
+		this.plugin.settings.locks[this.job]!.lockedDeviceName = this.syncChecker.deviceName();
 		await this.plugin.saveSettings()
 		return this.syncChecker.waitForSync(this.settings)
 	}
@@ -48,18 +48,18 @@ export default class CronLockManager {
 	}
 
 	clearLock(): void {
-		this.plugin.settings.locks[this.job].locked = false
+		this.plugin.settings.locks[this.job]!.locked = false
 	}
 
 	lastRun(): string | undefined {
-		return this.plugin.settings.locks[this.job].lastRun;
+		return this.plugin.settings.locks[this.job]!.lastRun;
 	}
 
 	resetLastRun(): void {
-		this.plugin.settings.locks[this.job].lastRun = undefined
+		this.plugin.settings.locks[this.job]!.lastRun = undefined
 	}
 
 	jobLocked(): boolean {
-		return this.plugin.settings.locks[this.job].locked || false
+		return this.plugin.settings.locks[this.job]!.locked || false
 	}
 }

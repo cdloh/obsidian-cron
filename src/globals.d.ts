@@ -1,29 +1,13 @@
-import { Plugin } from "obsidian";
+// import { Plugin } from "obsidian";
 
-declare module "obsidian" {
-	interface App {
-		isMobile: boolean
-		commands: {
-			executeCommand: (command: Command) =>  Promise<void>;
-			commands: { [key: string]: Command; }
-		}
-		plugins: {
-			plugins: {
-				[pluginId: string]: Plugin & {
-					[pluginImplementations: string]: unknown;
-				};
-			};
-			enablePlugin: (id: string) => Promise<void>;
-			disablePlugin: (id: string) => Promise<void>;
-		};
-		internalPlugins: {
-			plugins: {
-				[pluginId: string]: Plugin & {
-					[pluginImplementations: string]: unknown;
-				};
-			};
-			enablePlugin: (id: string) => Promise<void>;
-			disablePlugin: (id: string) => Promise<void>;
-		};
+import { SyncPlugin, InternalPlugin } from "@obsidian-typings/obsidian-public-latest";
+import { Events } from "obsidian";
+
+export {}; // This line is required. If there are no top-level `import/export` statements, your typings will work not as expected.
+declare module '@obsidian-typings/obsidian-public-latest' {
+	interface SyncPluginInstance extends InternalPlugin<SyncPlugin>, Events {
+		getStatus(): string
+		deviceName?: string
+		getDefaultDeviceName(): string
 	}
 }

@@ -1,8 +1,8 @@
-import { App } from 'obsidian';
+import { App, Platform } from 'obsidian';
 import CronLockManager from './lockManager';
 import Cron from './main';
 import SyncChecker from './syncChecker';
-import { parseExpression } from 'cron-parser';
+import { CronExpressionParser } from 'cron-parser';
 
 export interface CronJobFunc {(app:App): Promise<void> | void}
 
@@ -10,6 +10,7 @@ export interface CronJobSettings {
 	enableMobile?: boolean
 	disableSyncCheck?: boolean
 	disableJobLock?: boolean
+	disabled?: boolean
 }
 
 export default class Job {
@@ -23,7 +24,7 @@ export default class Job {
 	job: CronJobFunc | string
 	name: string
 	id: string
-	noRunReason: string
+	noRunReason = 'unknown'
 
 	public constructor(id: string, name: string, job: CronJobFunc | string, frequency: string, settings: CronJobSettings, app: App, plugin: Cron, syncChecker: SyncChecker) {
 		this.syncChecker = syncChecker;
@@ -41,7 +42,7 @@ export default class Job {
 
 	public async runJob(): Promise<void> {
 
-		console.log(`Running ${this.name}`);
+		console.debug(`Running ${this.name}`);
 
 		await this.lockManager.lockJob()
 
@@ -52,12 +53,17 @@ export default class Job {
 	}
 
 	public canRunJob(): boolean {
+		if(this.settings.disabled) {
+			this.noRunReason = "job disabled"
+			return false
+		}
+
 		if(this.lockManager.jobLocked() && !this.settings.disableJobLock) {
 			this.noRunReason = "job locked"
 			return false
 		}
 
-		if(this.app.isMobile && !this.settings.enableMobile){
+		if(Platform.isMobile && !this.settings.enableMobile){
 			this.noRunReason = "disabled on mobile"
 			return false
 		}
@@ -79,7 +85,7 @@ export default class Job {
 		const lastRun = this.lockManager.lastRun()
 		if(!lastRun) return true
 
-		const prevRun = window.moment(parseExpression(this.frequency).prev().toDate())
+		const prevRun = window.moment(CronExpressionParser.parse(this.frequency).prev().toDate())
 		return prevRun.isAfter(lastRun)
 	}
 
@@ -88,10 +94,10 @@ export default class Job {
 
 		try {
 			await this.job(this.app)
-			console.log(`${this.name} completed`)
+			console.debug(`${this.name} completed`)
 		} catch (error) {
-			console.log(`${this.name} failed to run`)
-			console.log(error)
+			console.error(`${this.name} failed to run`)
+			console.error(error)
 		}
 	}
 
@@ -101,10 +107,11 @@ export default class Job {
 		const jobCommand = this.app.commands.commands[this.job];
 
 		if(!jobCommand) {
-			console.log(`${this.name} failed to run: Command unknown`)
+			console.error(`${this.name} failed to run: Command unknown`)
+			return
 		}
 
-		await this.app.commands.executeCommand(jobCommand)
+		this.app.commands.executeCommand(jobCommand)
 	}
 
 }
