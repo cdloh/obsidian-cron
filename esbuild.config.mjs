@@ -10,6 +10,18 @@ if you want to view the source, please visit the github repository of this plugi
 
 const prod = process.argv[2] === 'production';
 
+// cron-parser's CronFileParser module calls require('fs') / require('fs/promises').
+// This plugin never parses crontab files, so swap that module for an empty export.
+const stubCronFileParser = {
+	name: 'stub-cron-file-parser',
+	setup(build) {
+		build.onLoad({ filter: /cron-parser[\\/]dist[\\/]CronFileParser\.js$/ }, () => ({
+			contents: 'exports.CronFileParser = undefined;',
+			loader: 'js',
+		}));
+	},
+};
+
 const context = await esbuild.context({
 	banner: {
 		js: banner,
@@ -37,6 +49,7 @@ const context = await esbuild.context({
 	logLevel: 'info',
 	sourcemap: prod ? false : 'inline',
 	treeShaking: true,
+	plugins: [stubCronFileParser],
 	outfile: 'main.js',
 	minify: prod,
 });
